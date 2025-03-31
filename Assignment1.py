@@ -12,7 +12,7 @@ class Assignment1:
     SIMULATION_TIME = 30     # Total simulation time in seconds
     MAX_PRINTER_SLEEP = 3    # Maximum sleep time for printers
     MAX_MACHINE_SLEEP = 5    # Maximum sleep time for machines
-    Semaphore=NUM_PRINTERS # Semaphore for the number of printers available
+    semaphore = threading.Semaphore(5) # Semaphore for the number of printers available in task2
 
     # Initialise simulation variables
     def __init__(self):
@@ -23,25 +23,28 @@ class Assignment1:
 
     def startSimulation(self):
         # Create Machine and Printer threads
-        # Write code here
+
+        # Create a list of machine threads and printer threads
         for i in range(self.NUM_MACHINES):
             machine = self.machineThread(i, self)
             self.mThreads.append(machine)
         for i in range(self.NUM_PRINTERS):
             printer = self.printerThread(i, self)
             self.pThreads.append(printer)
+        
         # Start all the threads
-        # Write code here
-
         for m in self.mThreads:
             m.start()
         for p in self.pThreads:
             p.start()
+
         # Let the simulation run for some time
         time.sleep(self.SIMULATION_TIME)
 
         # Finish simulation
-        self.sim_active = False
+        self.sim_active = False #if I delete this line, the simulation will not stop
+
+        # however, if I delete the 4 lines, the simulation can stop
         for m in self.mThreads:
             m.join()
         for p in self.pThreads:
