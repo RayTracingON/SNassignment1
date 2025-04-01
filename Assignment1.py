@@ -42,10 +42,13 @@ class Assignment1:
         time.sleep(self.SIMULATION_TIME)
 
         # Finish simulation
-        self.sim_active = False #if I delete this line, the simulation will not stop
+        ##if I delete this line, the simulation will not stop
+        self.sim_active = False 
 
         # Wait until all printer threads finish by joining them
-        # however, if I delete the 2 lines, the simulation can stop
+        ## however, if I delete the 4 lines without deleting self.sim_active = False, the simulation can stop
+        for m in self.mThreads:
+            m.join()
         for p in self.pThreads:
             p.join()
 
