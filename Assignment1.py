@@ -12,7 +12,8 @@ class Assignment1:
     SIMULATION_TIME = 30     # Total simulation time in seconds
     MAX_PRINTER_SLEEP = 3    # Maximum sleep time for printers
     MAX_MACHINE_SLEEP = 5    # Maximum sleep time for machines
-    semaphore = threading.Semaphore(5) # Semaphore for the number of printers available in task2
+    semaphore = NUM_PRINTERS  # Semaphore for the number of printers available
+    sleperList=[]         # List of sleep times for machines and printers
 
     # Initialise simulation variables
     def __init__(self):
@@ -49,8 +50,6 @@ class Assignment1:
         ## however, if I delete the 4 lines without deleting self.sim_active = False, the simulation can stop
         for m in self.mThreads:
             m.join()
-        for p in self.pThreads:
-            p.join()
 
 
 
@@ -62,10 +61,13 @@ class Assignment1:
             self.outer = outer  # Reference to the Assignment1 instance
 
         def run(self):
-            while self.outer.sim_active:
+            while self.outer.sim_active and self.outer.semaphore < self.outer.NUM_PRINTERS:
+                # Wait for a print request to be available
                 # Simulate printer taking some time to print the document
                 self.printerSleep()
                 self.printDox(self.printerID)
+                self.outer.semaphore+=1
+
                 
                 # Grab the request at the head of the queue and print it
                 # Write code here
@@ -87,12 +89,14 @@ class Assignment1:
             self.outer = outer  # Reference to the Assignment1 instance
 
         def run(self):
-            while self.outer.sim_active:
+            while self.outer.sim_active and self.outer.semaphore > 0:
+                self.outer.semaphore-=1
                 # Machine sleeps for a random amount of time
                 self.machineSleep()
                 # Machine wakes up and sends a print request
                 # Write code here
                 self.printRequest(self.machineID)
+                
                 
                 
 
