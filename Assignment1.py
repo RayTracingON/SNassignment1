@@ -44,13 +44,10 @@ class Assignment1:
         self.sim_active = False 
 
         # Wait until all printer threads finish by joining them
-        ## however, if I delete the 4 lines without deleting self.sim_active = False, the simulation can stop
         for m in self.mThreads:
             m.join()
         for p in self.pThreads:
             p.join()
-
-
 
     # Printer class
     class printerThread(threading.Thread):
@@ -60,13 +57,12 @@ class Assignment1:
             self.outer = outer  # Reference to the Assignment1 instance
 
         def run(self):
-            while self.outer.sim_active or self.outer.print_list.head is not None:
+            while self.outer.sim_active or self.outer.print_list.head is not None:#wait until all machines' printing task finish
                 # Simulate printer taking some time to print the document
                 self.printerSleep()
-                self.printDox(self.printerID)
-                
                 # Grab the request at the head of the queue and print it
                 # Write code here
+                self.printDox(self.printerID)
 
         def printerSleep(self):
             sleepSeconds = random.randint(1, self.outer.MAX_PRINTER_SLEEP)
