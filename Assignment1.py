@@ -9,7 +9,7 @@ class Assignment1:
     # Simulation Initialisation parameters
     NUM_MACHINES = 50        # Number of machines that issue print requests
     NUM_PRINTERS = 5         # Number of printers in the system
-    SIMULATION_TIME = 30     # Total simulation time in seconds
+    SIMULATION_TIME = 5     # Total simulation time in seconds
     MAX_PRINTER_SLEEP = 3    # Maximum sleep time for printers
     MAX_MACHINE_SLEEP = 5    # Maximum sleep time for machines
     semaphore = threading.Semaphore(5) # Semaphore for the number of printers available in task2
@@ -23,7 +23,6 @@ class Assignment1:
 
     def startSimulation(self):
         # Create Machine and Printer threads
-
         # Create a list of machine threads and printer threads
         for i in range(self.NUM_MACHINES):
             machine = self.machineThread(i, self)
@@ -42,7 +41,6 @@ class Assignment1:
         time.sleep(self.SIMULATION_TIME)
 
         # Finish simulation
-        ##if I delete this line, the simulation will not stop
         self.sim_active = False 
 
         # Wait until all printer threads finish by joining them
@@ -62,7 +60,7 @@ class Assignment1:
             self.outer = outer  # Reference to the Assignment1 instance
 
         def run(self):
-            while self.outer.sim_active:
+            while self.outer.sim_active or self.outer.print_list.head is not None:
                 # Simulate printer taking some time to print the document
                 self.printerSleep()
                 self.printDox(self.printerID)
