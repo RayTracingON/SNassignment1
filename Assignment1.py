@@ -12,7 +12,7 @@ class Assignment1:
     SIMULATION_TIME = 5     # Total simulation time in seconds
     MAX_PRINTER_SLEEP = 3    # Maximum sleep time for printers
     MAX_MACHINE_SLEEP = 5    # Maximum sleep time for machines
-    semaphore = threading.Semaphore(5) # Semaphore for the number of printers available in task2
+
 
     # Initialise simulation variables
     def __init__(self):
@@ -20,6 +20,8 @@ class Assignment1:
         self.print_list = printList()  # Create an empty list of print requests
         self.mThreads = []             # list for machine threads
         self.pThreads = []             # list for printer threads
+        self.semaphore = threading.Semaphore(self.NUM_PRINTERS)  # counting semaphore
+        self.binary = threading.Semaphore(1)
 
     def startSimulation(self):
         # Create Machine and Printer threads
@@ -70,8 +72,14 @@ class Assignment1:
 
         def printDox(self, printerID):
             print(f"Printer ID: {printerID} : now available")
+            # Acquire the binary semaphore to ensure mutual exclusion
+            self.outer.binary.acquire()
             # Print from the queue
             self.outer.print_list.queuePrint(printerID)
+            # Release the counting semaphore to signal that a printer is available
+            self.outer.semaphore.release()
+            # Release the binary semaphore
+            self.outer.binary.release()
 
     # Machine class
     class machineThread(threading.Thread):
@@ -84,11 +92,22 @@ class Assignment1:
             while self.outer.sim_active:
                 # Machine sleeps for a random amount of time
                 self.machineSleep()
-                # Machine wakes up and sends a print request
-                # Write code here
+                # Check if the queue is not full before sending a request
+                self.isRequestSafe(self.machineID)
+                # Machine sends a print request
                 self.printRequest(self.machineID)
+                # Release the binary semaphore after inserting the print request
+                self.postRequest(self.machineID)
                 
-                
+        def isRequestSafe(self,id):
+            # Check if the queue is not full before sending a request
+            print(f"Machine {id} Checking availability")
+            # Acquire counting semaphore (wait for an available printer)
+            self.outer.semaphore.acquire()
+            # Acquire binary semaphore for mutual exclusion of the print queue
+            self.outer.binary.acquire()
+            # Both semaphores acquired
+            print(f"Machine {id} will proceed")
 
         def machineSleep(self):
             sleepSeconds = random.randint(1, self.outer.MAX_MACHINE_SLEEP)
@@ -100,3 +119,8 @@ class Assignment1:
             doc = printDoc(f"My name is machine {id}", id)
             # Insert it in the print queue
             self.outer.print_list.queueInsert(doc)
+
+        def postRequest(self, id):
+            print(f"Machine {id} Releasing binary semaphore")
+            # Release the binary semaphore after inserting the print request
+            self.outer.binary.release()
