@@ -45,7 +45,8 @@ class Assignment1:
         # Finish simulation
         self.sim_active = False 
 
-        # Wait until all printer threads finish by joining them
+        # We won't join machine threads as they may be in busy waiting.
+        # Flush output and exit.
         for m in self.mThreads:
             m.join()
         for p in self.pThreads:
