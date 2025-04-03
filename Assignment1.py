@@ -12,7 +12,6 @@ class Assignment1:
     SIMULATION_TIME = 5     # Total simulation time in seconds
     MAX_PRINTER_SLEEP = 3    # Maximum sleep time for printers
     MAX_MACHINE_SLEEP = 5    # Maximum sleep time for machines
-    semaphore = threading.Semaphore(5) # Semaphore for the number of printers available in task2
 
     # Initialise simulation variables
     def __init__(self):
