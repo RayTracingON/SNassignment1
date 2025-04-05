@@ -31,8 +31,6 @@ class Assignment1:
             self.pThreads.append(printer)
         
         # Start all the threads
-        for m in self.mThreads:
-            m.start()
         for p in self.pThreads:
             p.start()
 
