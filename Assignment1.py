@@ -58,7 +58,8 @@ class Assignment1:
             self.outer = outer  # Reference to the Assignment1 instance
 
         def run(self):
-            while self.outer.sim_active or self.outer.print_list.head is not None:#wait until all machines' printing task finish
+            while self.outer.sim_active or self.outer.print_list.head is not None:
+                #wait until all machines' printing task finish
                 # Simulate printer taking some time to print the document
                 self.printerSleep()
                 # Grab the request at the head of the queue and print it
